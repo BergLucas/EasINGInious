@@ -1,5 +1,9 @@
 services:
   backend:
+    restart: always
     ports:
       - 80:80
       - 8080:8080
+
+  db:
+    restart: always
