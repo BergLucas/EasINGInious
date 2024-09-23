@@ -1,0 +1,4 @@
+[submodule "inginious"]
+	path = inginious
+	url = https://github.com/UCL-INGI/INGInious.git
+	branch = inginious-0.8
