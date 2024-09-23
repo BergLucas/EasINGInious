@@ -1,0 +1,6 @@
+services:
+  backend:
+    image: easinginious:0.0.1
+    command: "bash"
+    stdin_open: true
+    tty: true
