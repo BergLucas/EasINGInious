@@ -8,7 +8,7 @@ services:
       target: development
     command: >
       sh -c "poetry install --sync &&
-             poetry run python $(poetry run which inginious-webapp)"
+             poetry run inginious-webapp"
     volumes:
       - .:/app
     ports:
