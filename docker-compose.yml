@@ -3,6 +3,9 @@ name: easinginious
 services:
   backend:
     image: easinginious:0.0.1
+    group_add:
+      - ${LIGHTTPD_GID:?Please set the group id of the lighttpd group}
+      - ${DOCKER_GID:?Please set the group id of the docker group}
     volumes:
       - /var/www/INGInious/:/var/www/INGInious/
       - /var/run/docker.sock:/var/run/docker.sock

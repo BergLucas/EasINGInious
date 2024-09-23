@@ -5,7 +5,11 @@ ENV INGINIOUS_DIR=/var/www/INGInious
 
 ENV INGINIOUS_WEBAPP_HOST=0.0.0.0
 
-ENV INGINIOUS_WEBAPP_PORT=8080
+ENV INGINIOUS_WEBAPP_PORT=80
+
+ENV INGINIOUS_WEBDAV_HOST=0.0.0.0
+
+ENV INGINIOUS_WEBDAV_PORT=8080
 
 ENV INGINIOUS_WEBAPP_CONFIG=${INGINIOUS_DIR}/configuration.yaml
 
@@ -47,8 +51,24 @@ RUN poetry export --without-hashes -f requirements.txt | pip install --prefix /e
 # Production
 FROM base AS production
 
+RUN dnf install -y lighttpd lighttpd-fastcgi && \
+    usermod -aG docker lighttpd && \
+    chown -R lighttpd:lighttpd .
+
 COPY --from=builder /env/ /usr/local/
+
+RUN sed -i 's|server.document-root = server_root + "/lighttpd"|server.document-root = server_root + "/INGInious"|' /etc/lighttpd/lighttpd.conf && \
+    sed -i 's|server.pid-file = state_dir + "/lighttpd.pid"|#server.pid-file = state_dir + "/lighttpd.pid"|' /etc/lighttpd/lighttpd.conf && \
+    sed -i 's|server.port = 80|server.port = 8080|' /etc/lighttpd/lighttpd.conf && \
+    echo 'include "/etc/lighttpd/vhosts.d/inginious.conf"' >> /etc/lighttpd/lighttpd.conf && \
+    chown -R lighttpd:lighttpd /usr/local/lib/python3.12/site-packages/inginious/frontend/static/
+
+USER lighttpd
+
+COPY modules.conf /etc/lighttpd/modules.conf
+
+COPY inginious.conf /etc/lighttpd/vhosts.d/inginious.conf
 
 EXPOSE ${INGINIOUS_WEBAPP_PORT}
 
-CMD inginious-webapp
+CMD lighttpd -D -f /etc/lighttpd/lighttpd.conf
