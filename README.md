@@ -1,6 +1,6 @@
 # EasINGInious
 
-EasINGInious is a project which tries to simplify the installation of INGInious using [Docker](https://docs.docker.com/engine/install/) and by fixing dependency version issues.
+EasINGInious is a project which tries to simplify the installation of INGInious by using [Docker](https://docs.docker.com/engine/install/) and by fixing dependency version issues.
 
 Currently, this project installs the version `0.8` of INGInious. The documentation for this version is available [here](https://docs.inginious.org/en/v0.8.2/admin_doc/install_doc/installation.html).
 
