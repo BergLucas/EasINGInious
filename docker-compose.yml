@@ -16,6 +16,8 @@ services:
 
   db:
     image: mongo:8.0.0-noble
+    volumes:
+      - easinginious_data:/data/db
     networks:
       - backend_network
 
