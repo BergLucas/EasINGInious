@@ -1,0 +1,37 @@
+[project]
+name = "inginious_container_api"
+version = "1.0.0"
+
+[tool.setuptools]
+script-files = [
+    "../inginious/base-containers/base/bin/_run_student_intern",
+    "../inginious/base-containers/base/bin/archive",
+    "../inginious/base-containers/base/bin/feedback",
+    "../inginious/base-containers/base/bin/feedback-custom",
+    "../inginious/base-containers/base/bin/feedback-grade",
+    "../inginious/base-containers/base/bin/feedback-msg",
+    "../inginious/base-containers/base/bin/feedback-msg-tpl",
+    "../inginious/base-containers/base/bin/feedback-result",
+    "../inginious/base-containers/base/bin/feedback-state",
+    "../inginious/base-containers/base/bin/getinput",
+    "../inginious/base-containers/base/bin/INGInious",
+    "../inginious/base-containers/base/bin/inginious-ipython",
+    "../inginious/base-containers/base/bin/parsetemplate",
+    "../inginious/base-containers/base/bin/rst-code",
+    "../inginious/base-containers/base/bin/rst-image",
+    "../inginious/base-containers/base/bin/rst-indent",
+    "../inginious/base-containers/base/bin/rst-msgblock",
+    "../inginious/base-containers/base/bin/run_student",
+    "../inginious/base-containers/base/bin/ssh_student",
+    "../inginious/base-containers/base/bin/tag",
+    "../inginious/base-containers/base/bin/tag-set",
+]
+
+[tool.setuptools.packages.find]
+where = ["../inginious/base-containers/base"]
+include = ["inginious_container_api"]
+namespaces = false
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
