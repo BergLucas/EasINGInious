@@ -19,7 +19,7 @@ Then, you must install [Docker](https://docs.docker.com/engine/install/) on your
 After that, you need to create a user that will have access to the INGInious folder:
 
 ```bash
-sudo useradd -U -s /usr/sbin/nologin inginious
+sudo useradd -U -M -s /usr/sbin/nologin inginious
 sudo mkdir /var/www/INGInious
 sudo chown inginious:inginious /var/www/INGInious
 sudo chmod 775 /var/www/INGInious
