@@ -1,16 +1,13 @@
 name: easinginious
 
 services:
-  backend:
-    image: easinginious:0.0.1
-    group_add:
-      - ${INGINIOUS_GID:?Please set the group id of the inginious group}
-      - ${DOCKER_GID:?Please set the group id of the docker group}
+  app:
+    image: easinginious:0.9.1
+    privileged: true
     volumes:
-      - /var/www/INGInious/:/var/www/INGInious/
-      - /var/run/docker.sock:/var/run/docker.sock
+      - easinginious_docker_data:/var/lib/docker
     networks:
-      - backend_network
+      - db_network
     depends_on:
       - db
 
@@ -19,10 +16,11 @@ services:
     volumes:
       - easinginious_data:/data/db
     networks:
-      - backend_network
+      - db_network
 
 volumes:
   easinginious_data:
+  easinginious_docker_data:
 
 networks:
-  backend_network:
+  db_network:

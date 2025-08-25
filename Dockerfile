@@ -1,7 +1,11 @@
 # Base
-FROM fedora:40 AS base
+FROM docker:28.3-dind AS base
 
 ENV INGINIOUS_DIR=/var/www/INGInious
+
+ENV INGINIOUS_TASKS_DIR=${INGINIOUS_DIR}/tasks
+
+ENV INGINIOUS_BACKUPS_DIR=${INGINIOUS_DIR}/backups
 
 ENV INGINIOUS_WEBAPP_HOST=0.0.0.0
 
@@ -17,14 +21,16 @@ ENV PYTHONUNBUFFERED=1
 
 VOLUME [ "${INGINIOUS_DIR}" ]
 
-WORKDIR ${INGINIOUS_DIR}
+WORKDIR "${INGINIOUS_DIR}"
 
-RUN dnf install -y git gcc libtidy python3 python3-devel python3-pip python3-setuptools zeromq-devel dnf-plugins-core xmlsec1-openssl-devel libtool-ltdl-devel which && \
-    dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo && \
-    dnf install -y docker-ce-cli && \
-    dnf clean all && \
-    mkdir tasks && \
-    mkdir backup
+COPY inginious-entrypoint.sh /usr/local/bin/inginious-entrypoint.sh
+
+RUN apk add --no-cache gcc musl-dev linux-headers python3 python3-dev py3-pip py3-setuptools tidyhtml-libs libzmq xmlsec libtool && \
+    mkdir "${INGINIOUS_TASKS_DIR}" && \
+    mkdir "${INGINIOUS_BACKUPS_DIR}" && \
+    chmod +x /usr/local/bin/inginious-entrypoint.sh
+
+ENTRYPOINT [ "/usr/local/bin/inginious-entrypoint.sh" ]
 
 # Development
 FROM base AS development
@@ -33,42 +39,38 @@ ENV PYTHONDONTWRITEBYTECODE=1
 
 ENV POETRY_HOME=/opt/poetry
 
-RUN python3 -m venv $POETRY_HOME && \
-    $POETRY_HOME/bin/pip install poetry~=1.8 && \
+WORKDIR /app
+
+RUN python -m venv $POETRY_HOME && \
+    $POETRY_HOME/bin/pip install poetry~=2.0 poetry-plugin-export~=1.9 && \
     ln -s $POETRY_HOME/bin/poetry /usr/local/bin/poetry
 
 # Builder
 FROM development AS builder
 
-WORKDIR /app
-
-COPY pyproject.toml poetry.lock ./
-
 COPY . .
 
-RUN poetry export --without-hashes -f requirements.txt | pip install --prefix /env/ -r /dev/stdin
+RUN pip install --prefix /env/ .
 
 # Production
 FROM base AS production
 
-RUN dnf install -y lighttpd lighttpd-fastcgi && \
-    usermod -aG docker lighttpd && \
-    chown -R lighttpd:lighttpd .
+ENV REAL_SCRIPT_NAME=""
 
-COPY --from=builder /env/ /usr/local/
+RUN apk add --no-cache lighttpd fcgi py3-flup && \
+    rm -rf /var/www/localhost && \
+    adduser lighttpd docker && \
+    chown -R lighttpd:lighttpd "${INGINIOUS_DIR}" && \
+    sed -i "/^server\.document-root/c\server.document-root = \"${INGINIOUS_DIR}\"" /etc/lighttpd/lighttpd.conf && \
+    sed -i "/^server\.pid-file/ s/^/#/" /etc/lighttpd/lighttpd.conf && \
+    echo "include \"/etc/lighttpd/vhosts.d/inginious.conf\"" >> /etc/lighttpd/lighttpd.conf
 
-RUN sed -i 's|server.document-root = server_root + "/lighttpd"|server.document-root = server_root + "/INGInious"|' /etc/lighttpd/lighttpd.conf && \
-    sed -i 's|server.pid-file = state_dir + "/lighttpd.pid"|#server.pid-file = state_dir + "/lighttpd.pid"|' /etc/lighttpd/lighttpd.conf && \
-    sed -i 's|server.port = 80|server.port = 8080|' /etc/lighttpd/lighttpd.conf && \
-    echo 'include "/etc/lighttpd/vhosts.d/inginious.conf"' >> /etc/lighttpd/lighttpd.conf && \
-    chown -R lighttpd:lighttpd /usr/local/lib/python3.12/site-packages/inginious/frontend/static/
-
-USER lighttpd
-
-COPY modules.conf /etc/lighttpd/modules.conf
+COPY --from=builder /env/ /usr/
 
 COPY inginious.conf /etc/lighttpd/vhosts.d/inginious.conf
 
 EXPOSE ${INGINIOUS_WEBAPP_PORT}
 
-CMD lighttpd -D -f /etc/lighttpd/lighttpd.conf
+EXPOSE ${INGINIOUS_WEBDAV_PORT}
+
+CMD [ "lighttpd", "-D", "-f", "/etc/lighttpd/lighttpd.conf" ]

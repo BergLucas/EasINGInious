@@ -1,12 +1,11 @@
 # EasINGInious
 
-EasINGInious is a project which tries to simplify the installation of INGInious by using [Docker](https://docs.docker.com/engine/install/) and by fixing dependency version issues.
+EasINGInious is a project which tries to simplify the installation of INGInious using [Docker in Docker (DinD)](https://hub.docker.com/_/docker).
 
-Currently, this project installs the version `0.8` of INGInious. The documentation for this version is available [here](https://docs.inginious.org/en/v0.8.2/admin_doc/install_doc/installation.html).
+This allows INGInious to separate the grading containers from the application containers using its own Docker daemon and to avoid problems with [bind-mounts](https://docs.docker.com/engine/storage/bind-mounts/) inside containers.
 
-Because of how INGInious works, installing it in a Docker container requires a few specific actions. This is due to the fact that the INGInious Docker agent dynamically creates Docker containers to run the student code and therefore the container running INGInious must have access to the Docker socket and must have the correct permissions. In addition, the containers running the student code must ‘mount’ certain files. However, files from a Docker container cannot be ‘mounted’ in another container. It is therefore necessary to use the host file system at some point.
 
-## Installation
+## Setting up a development environment
 
 First, you need to clone the repository and its submodules using the following command:
 
@@ -16,34 +15,39 @@ git clone --recurse-submodules https://github.com/BergLucas/EasINGInious.git
 
 Then, you must install [Docker](https://docs.docker.com/engine/install/) on your machine.
 
-After that, you need to create a user that will have access to the INGInious folder:
+Next, you must execute and install the application using the following commands:
 
 ```bash
-sudo useradd -U -M -s /usr/sbin/nologin inginious
-sudo mkdir /var/www/INGInious
-sudo chown inginious:inginious /var/www/INGInious
-sudo chmod 775 /var/www/INGInious
+# Start the application containers
+docker compose up -d
+
+# To create a super admin
+docker compose exec -it app poetry run easinginious createsuperadmin
+
+# To build the grading containers
+docker compose exec -it app poetry run easinginious buildcontainers
 ```
 
-Next, you must run the installer by running the following commands:
+
+## Setting up a production environment
+
+First, you need to clone the repository and its submodules using the following command:
 
 ```bash
-export DOCKER_GID=$(getent group docker | awk -F: '{print $3}')
-export INGINIOUS_GID=$(getent group inginious | awk -F: '{print $3}')
-docker compose -f docker-compose.yml -f docker-compose.installer.yml -f docker-compose.build.yml up -d
-docker compose -f docker-compose.yml -f docker-compose.installer.yml exec -it backend inginious-install
-docker compose -f docker-compose.yml -f docker-compose.installer.yml down
+git clone --recurse-submodules https://github.com/BergLucas/EasINGInious.git
 ```
 
-Afterwards, the installer should be started. You can configure INGInious as you like, the only important information you'll need is that the address of the Mongo DB is `db`. To avoid permission issues, it is also recommended that you edit the `/var/www/INGInious/configuration.yaml` file after installation to change the value of `local-config` to:
+Then, you must install [Docker](https://docs.docker.com/engine/install/) on your machine.
 
-```yml
-local-config:
-    tmp_dir: /var/www/INGInious/agent_tmp
-```
-
-Finally, you can start the application by running the following command:
+Next, you must execute and install the application using the following commands:
 
 ```bash
-DOCKER_GID=$(getent group docker | awk -F: '{print $3}') INGINIOUS_GID=$(getent group inginious | awk -F: '{print $3}') docker compose -f docker-compose.yml -f docker-compose.prod.yml up
+# Start the application containers
+docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.build.yml up -d
+
+# To create a super admin
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -it app poetry run easinginious createsuperadmin
+
+# To build the grading containers
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -it app poetry run easinginious buildcontainers
 ```

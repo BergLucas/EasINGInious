@@ -1,21 +1,24 @@
-[tool.poetry]
+[project]
 name = "easinginious"
-version = "0.1.0"
-description = ""
-authors = ["Berg Lucas <55436804+BergLucas@users.noreply.github.com>"]
-license = "MIT"
+version = "0.9.1"
+description = "EasINGInious is a project which tries to simplify the installation of INGInious using Docker in Docker (DinD)."
+authors = [
+    { name = "Berg Lucas", email = "55436804+BergLucas@users.noreply.github.com" },
+]
 readme = "README.md"
-package-mode = false
+license = "AGPL-3.0"
+keywords = ["Poetry", "easinginious"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3.9",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+]
+requires-python = ">=3.9,<4.0"
+dependencies = ["inginious[cgi,ldap,saml2] @ external/inginious"]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-inginious = { path = "inginious", extras = ["cgi", "ldap", "saml2"] }
-flask = "^2.0.0"
-werkzeug = "^2.0.0"
-setuptools = "^75.1.0"
-pymongo = "^3.2.2"
-
+[project.scripts]
+easinginious = "easinginious:main"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"

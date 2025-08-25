@@ -1,5 +1,5 @@
 services:
-  backend:
+  app:
     restart: always
     ports:
       - 80:80

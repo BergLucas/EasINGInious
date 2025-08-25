@@ -1,14 +1,14 @@
 name: easinginious-dev
 
 services:
-  backend:
-    image: easinginious:0.0.1-dev
+  app:
+    image: easinginious:0.9.1-dev
     build:
       context: .
       target: development
     command: >
-      sh -c "poetry -C /app install --sync &&
-             poetry -C /app run inginious-webapp"
+      sh -c "poetry sync &&
+             poetry run inginious-webapp"
     volumes:
       - .:/app
     ports:
