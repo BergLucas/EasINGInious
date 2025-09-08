@@ -5,7 +5,7 @@ set -eu
 TINI_SUBREAPER=1 dockerd-entrypoint.sh dockerd &
 docker_pid=$!
 
-while ! docker info >/dev/null 2>&1; do
+while ! docker info > /dev/null 2>&1; do
     sleep 1
 done
 
