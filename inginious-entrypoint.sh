@@ -16,8 +16,8 @@ backup_directory: $INGINIOUS_BACKUPS_DIR
 local-config:
   tmp_dir: /tmp/agent_tmp
 mongo_opt:
-  database: INGInious
-  host: db
+  database: $INGINIOUS_DB_NAME
+  host: $INGINIOUS_DB_HOST
 plugins: []
 session_parameters:
   ignore_change_ip: false
