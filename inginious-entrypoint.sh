@@ -2,6 +2,10 @@
 
 set -eu
 
+# explicitly remove containerd's default PID file to ensure that it can start properly
+# if it was stopped uncleanly (and thus didn't clean up the PID file)
+find /run /var/run -iname 'containerd*.pid' -delete || :
+
 TINI_SUBREAPER=1 dockerd-entrypoint.sh dockerd &
 docker_pid=$!
 
