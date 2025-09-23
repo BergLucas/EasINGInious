@@ -29,7 +29,7 @@ WORKDIR "${INGINIOUS_DIR}"
 
 COPY inginious-entrypoint.sh /usr/local/bin/inginious-entrypoint.sh
 
-RUN apk add --no-cache gcc musl-dev linux-headers python3 python3-dev py3-pip py3-setuptools tidyhtml-libs libzmq xmlsec libtool && \
+RUN apk add --no-cache gcc musl-dev linux-headers python3 python3-dev py3-pip py3-setuptools tidyhtml-libs libzmq xmlsec libtool tzdata && \
     mkdir "${INGINIOUS_TASKS_DIR}" && \
     mkdir "${INGINIOUS_BACKUPS_DIR}" && \
     chmod +x /usr/local/bin/inginious-entrypoint.sh
