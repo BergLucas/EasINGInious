@@ -14,7 +14,7 @@ classifiers = [
     "License :: OSI Approved :: GNU Affero General Public License v3",
 ]
 requires-python = ">=3.9,<4.0"
-dependencies = ["inginious[cgi,ldap,saml2] @ external/inginious"]
+dependencies = ["inginious[ldap,saml2] @ external/inginious"]
 
 [project.scripts]
 easinginious = "easinginious:main"
