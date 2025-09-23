@@ -1,6 +1,6 @@
 [project]
 name = "easinginious"
-version = "0.9.1"
+version = "0.9.2"
 description = "EasINGInious is a project which tries to simplify the installation of INGInious using Docker in Docker (DinD)."
 authors = [
     { name = "Berg Lucas", email = "55436804+BergLucas@users.noreply.github.com" },
