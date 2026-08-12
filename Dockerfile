@@ -49,10 +49,12 @@ RUN python -m venv $POETRY_HOME && \
     $POETRY_HOME/bin/pip install poetry~=2.0 poetry-plugin-export~=1.9 && \
     ln -s $POETRY_HOME/bin/poetry /usr/local/bin/poetry
 
+COPY . .
+
+RUN poetry install
+
 # Builder
 FROM development AS builder
-
-COPY . .
 
 RUN pip install --prefix /env/ .
 

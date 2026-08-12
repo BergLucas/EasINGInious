@@ -7,11 +7,16 @@ services:
       context: .
       target: development
     command: >
-      sh -c "poetry sync &&
-             poetry run easinginious updatedb &&
+      sh -c "poetry run easinginious updatedb &&
              poetry run inginious-webapp"
-    volumes:
-      - .:/app
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          initial_sync: true
+        - action: restart
+          path: pyproject.toml
     ports:
       - 80:80
 
