@@ -1,5 +1,5 @@
 # Base
-FROM docker:28.3-dind AS base
+FROM docker:28.5-dind AS base
 
 ENV INGINIOUS_DIR=/var/www/INGInious
 
