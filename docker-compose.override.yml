@@ -8,6 +8,7 @@ services:
       target: development
     command: >
       sh -c "poetry sync &&
+             poetry run easinginious updatedb &&
              poetry run inginious-webapp"
     volumes:
       - .:/app

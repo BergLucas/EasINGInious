@@ -13,6 +13,28 @@ while ! docker info > /dev/null 2>&1; do
     sleep 1
 done
 
+set_oom_group() {
+    CGROUP_ROOT=/sys/fs/cgroup/docker
+
+    while [ ! -d "$CGROUP_ROOT" ]; do
+        sleep 1
+    done
+
+    while kill -0 "$docker_pid" 2>/dev/null; do
+        for cgroup in "$CGROUP_ROOT"/*; do
+            [ -f "$cgroup/memory.oom.group" ] || continue
+
+            if [ "$(cat "$cgroup/memory.oom.group")" != "1" ]; then
+                echo 1 > "$cgroup/memory.oom.group" 2>/dev/null || true
+            fi
+        done
+
+        sleep 0.1
+    done
+}
+set_oom_group &
+oom_watcher_pid=$!
+
 if [ ! -f "$INGINIOUS_WEBAPP_CONFIG" ]; then
 cat << EOT > "$INGINIOUS_WEBAPP_CONFIG"
 backend: local
@@ -37,7 +59,7 @@ exec "$@" &
 command_pid=$!
 
 signalHandler() {
-    kill $command_pid $docker_pid
+    kill $command_pid $docker_pid $oom_watcher_pid 2>/dev/null || true
     wait $command_pid
     exit $?
 }

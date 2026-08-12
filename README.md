@@ -24,6 +24,9 @@ docker compose up -d
 # To create a super admin
 docker compose exec -it app poetry run easinginious createsuperadmin
 
+# To update the database
+docker compose exec -it app poetry run easinginious updatedb
+
 # To build the grading containers
 docker compose exec -it app poetry run easinginious buildcontainers
 ```
@@ -46,8 +49,11 @@ Next, you must execute and install the application using the following commands:
 docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.build.yml up -d
 
 # To create a super admin
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -it app poetry run easinginious createsuperadmin
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -it app easinginious createsuperadmin
+
+# To update the database
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -it app easinginious updatedb
 
 # To build the grading containers
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -it app poetry run easinginious buildcontainers
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -it app easinginious buildcontainers
 ```

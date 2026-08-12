@@ -77,4 +77,4 @@ EXPOSE ${INGINIOUS_WEBAPP_PORT}
 
 EXPOSE ${INGINIOUS_WEBDAV_PORT}
 
-CMD [ "lighttpd", "-D", "-f", "/etc/lighttpd/lighttpd.conf" ]
+CMD ["/bin/sh", "-c", "easinginious updatedb && lighttpd -D -f /etc/lighttpd/lighttpd.conf"]

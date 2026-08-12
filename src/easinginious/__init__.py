@@ -3,7 +3,10 @@ from inginious.frontend.installer import Installer
 from inginious.frontend.user_manager import UserManager
 
 import inginious.common.custom_yaml as yaml
+import subprocess
 import os
+
+CONFIG_ENV_VARIABLE = "INGINIOUS_WEBAPP_CONFIG"
 
 
 def create_super_admin(file: str) -> None:
@@ -63,6 +66,7 @@ def create_super_admin(file: str) -> None:
             "bindings": {},
             "code_indentation": "4",
             "language": "en",
+            "timezone": "UTC",
         }
     )
 
@@ -73,6 +77,15 @@ def create_super_admin(file: str) -> None:
 
     with open(file, "w") as f:
         yaml.dump(options, f)
+
+
+def update_database(file: str) -> None:
+    """Update the INGInious database
+
+    Args:
+        file: Path to the configuration file.
+    """
+    subprocess.run(("inginious-database-update", "-c", file))
 
 
 def main() -> None:
@@ -90,12 +103,22 @@ def main() -> None:
     superadmin_parser.add_argument(
         "--file",
         help="Path to configuration file. If not set, use the default for the given frontend.",
-        default=os.environ.get("INGINIOUS_WEBAPP_CONFIG", ""),
+        default=os.getenv(CONFIG_ENV_VARIABLE, ""),
     )
 
     subparsers.add_parser(
         "buildcontainers",
         help="Build the Docker containers",
+    )
+
+    updatedb_parser = subparsers.add_parser(
+        "updatedb",
+        help="Update the INGInious database",
+    )
+    updatedb_parser.add_argument(
+        "--file",
+        help="Path to configuration file. If not set, use the default for the given frontend.",
+        default=os.getenv(CONFIG_ENV_VARIABLE, ""),
     )
 
     args = parser.parse_args()
@@ -104,5 +127,7 @@ def main() -> None:
         create_super_admin(args.file)
     elif args.command == "buildcontainers":
         Installer().select_containers_to_build()
+    elif args.command == "updatedb":
+        update_database(args.file)
     else:
         parser.print_help()
