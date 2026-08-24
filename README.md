@@ -13,7 +13,7 @@ First, you need to clone the repository and its submodules using the following c
 git clone --recurse-submodules https://github.com/BergLucas/EasINGInious.git
 ```
 
-Then, you must install [Docker](https://docs.docker.com/engine/install/) on your machine.
+Then, you must install [Docker](https://docs.docker.com/engine/install/) or [Podman](https://podman.io/docs/installation) on your machine.
 
 Next, you must execute and install the application using the following commands:
 
@@ -22,15 +22,16 @@ Next, you must execute and install the application using the following commands:
 docker compose up -d
 
 # To create a super admin
-docker compose exec -it app poetry run easinginious createsuperadmin
+docker exec -it easinginious-dev_app_1 poetry run easinginious createsuperadmin
 
 # To update the database
-docker compose exec -it app poetry run easinginious updatedb
+docker exec -it easinginious-dev_app_1 poetry run easinginious updatedb
 
 # To build the grading containers
-docker compose exec -it app poetry run easinginious buildcontainers
+docker exec -it easinginious-dev_app_1 poetry run easinginious buildcontainers
 ```
 
+If using podman, juste replace `docker` by `podman` in above commands.
 
 ## Setting up a production environment
 
