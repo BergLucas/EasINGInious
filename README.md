@@ -35,6 +35,7 @@ docker compose exec -it app poetry run easinginious buildcontainers
 podman exec -it easinginious-dev_app_1 poetry run easinginious buildcontainers
 ```
 
+
 ## Setting up a production environment
 
 First, you need to clone the repository and its submodules using the following command:
