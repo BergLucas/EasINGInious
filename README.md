@@ -51,6 +51,7 @@ Next, you must execute and install the application using the following commands:
 # Start the application containers
 docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.build.yml up -d
 podman compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.build.yml up -d
+APP_PORT=8000 podman compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.build.yml up -d  # rootless
 
 # To create a super admin
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -it app easinginious createsuperadmin
