@@ -20,18 +20,20 @@ Next, you must execute and install the application using the following commands:
 ```bash
 # Start the application containers
 docker compose up -d
+podman compose up -d
 
 # To create a super admin
-docker exec -it easinginious-dev_app_1 poetry run easinginious createsuperadmin
+docker compose exec -it app poetry run easinginious createsuperadmin
+podman exec -it easinginious-dev_app_1 poetry run easinginious createsuperadmin
 
 # To update the database
-docker exec -it easinginious-dev_app_1 poetry run easinginious updatedb
+docker compose exec -it app poetry run easinginious updatedb
+podman exec -it easinginious-dev_app_1 poetry run easinginious updatedb
 
 # To build the grading containers
-docker exec -it easinginious-dev_app_1 poetry run easinginious buildcontainers
+docker compose exec -it app poetry run easinginious buildcontainers
+podman exec -it easinginious-dev_app_1 poetry run easinginious buildcontainers
 ```
-
-If using podman, juste replace `docker` by `podman` in above commands.
 
 ## Setting up a production environment
 
@@ -48,13 +50,17 @@ Next, you must execute and install the application using the following commands:
 ```bash
 # Start the application containers
 docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.build.yml up -d
+podman compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.build.yml up -d
 
 # To create a super admin
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -it app easinginious createsuperadmin
+podman exec -it easinginious_app_1 easinginious createsuperadmin
 
 # To update the database
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -it app easinginious updatedb
+podman exec -it easinginious_app_1 easinginious updatedb
 
 # To build the grading containers
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -it app easinginious buildcontainers
+podman exec -it easinginious_app_1 easinginious buildcontainers
 ```
