@@ -19,7 +19,7 @@ services:
         - action: restart
           path: pyproject.toml
     ports:
-      - 80:80
+      - 8000:8000
 
   db:
     ports:
