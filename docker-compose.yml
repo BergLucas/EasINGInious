@@ -4,6 +4,10 @@ services:
   app:
     image: easinginious:0.9.2
     privileged: true
+    ulimits:
+      nofile:
+        hard: 8192
+        soft: 8192
     volumes:
       - easinginious_docker_data:/var/lib/docker
     networks:

@@ -4,10 +4,6 @@ services:
   app:
     image: easinginious:0.9.2-dev
     pull_policy: never
-    ulimits:
-      nofile:
-        hard: 8192
-        soft: 8192
     build:
       context: .
       target: development
